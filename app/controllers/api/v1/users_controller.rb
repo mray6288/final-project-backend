@@ -1,4 +1,4 @@
-class UsersController < ApplicationController
+class Api::V1::UsersController < ApplicationController
 	def create
 		@user = User.new(username: params[:username], password: params[:password])
 
@@ -9,4 +9,6 @@ class UsersController < ApplicationController
 			render json: {error: "error!"}
 		end
 	end
+
+	
 end

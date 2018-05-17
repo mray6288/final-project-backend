@@ -1,3 +1,3 @@
 class Target < ApplicationRecord
-	has_many: :usertargets
+	has_many :user_targets
 end
