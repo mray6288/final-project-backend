@@ -86,6 +86,10 @@ Rails.application.configure do
     'Access-Control-Request-Method' => %w{GET OPTIONS}.join(",")
   }
 
+
+  config.action_cable.mount_path = '/cable'
+  config.action_cable.url = 'wss://localhost:3000/cable'
+  config.action_cable.allowed_request_origins = '*'
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
