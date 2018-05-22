@@ -2,14 +2,15 @@ require 'rest-client'
 require 'json'
 
 
-targets = ['apple','bowtie','circle','hexagon','sword','watermelon','dog','foot',
+
+
+class GameChannel < ApplicationCable::Channel
+  # @@count = 0
+  @targets = ['apple','bowtie','circle','hexagon','sword','watermelon','dog','foot',
   'butterfly','chair','clock','fish','door','pizza','television','sun',
   'mushroom','eye','hockey stick','dumbbell','shoe','stop sign',
   'snowman','snowflake','table','tooth','saxophone','star','boomerang','broom',
   'baseball','baseball bat','golf club']
-
-class GameChannel < ApplicationCable::Channel
-  # @@count = 0
 
   def subscribed
     # puts "SOMEONE SUBSCRIBED GAME!!!!!!!\n"
@@ -21,7 +22,7 @@ class GameChannel < ApplicationCable::Channel
       # if !@game.target
       #   @game.newGame()
       # end
-      @game.target = targets.sample
+      @game.target = @targets.sample
       @game.save
       sleep(1)
       GameChannel.broadcast_to("game-#{@game.id}", {type: 'new subscriber', game: @game, isPlayer: params[:username] === @game.player2})
@@ -74,7 +75,7 @@ class GameChannel < ApplicationCable::Channel
       @game.will_rematch = true
       @game.save
     else
-      @game.target = targets.sample
+      @game.target = @targets.sample
       @game.timer = 0
       @game.will_rematch = false
       @game.save 
