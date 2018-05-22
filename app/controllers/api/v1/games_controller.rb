@@ -3,7 +3,7 @@ class Api::V1::GamesController < ApplicationController
 	def create
 		@game = Game.create(game_params)
 		LobbyChannel.broadcast_to('lobby', Game.all)
-
+		@game.set_target()
 		render json: @game
 	end
 
