@@ -88,8 +88,10 @@ Rails.application.configure do
 
 
   config.action_cable.mount_path = '/cable'
-  config.action_cable.url = 'wss://localhost:3000/cable'
-  config.action_cable.allowed_request_origins = '*'
+  # config.action_cable.url = 'wss://2eaa314f.ngrok.io'
+  config.action_cable.url = 'wss://ray-final-project-test-backend.herokuapp.com/cable'
+  config.action_cable.allowed_request_origins = '*'#'https://ray-final-project-test.herokuapp.com*'
+
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
