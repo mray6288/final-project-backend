@@ -35,22 +35,32 @@ class GameChannel < ApplicationCable::Channel
     num_guesses = 1
     if @game.timer >= 40
       num_guesses = 5
+    elsif @game.timer >= 60
+      num_guesses = 20
     end
     guesses1 = fetchStuff(data['vectors'][@game.player1], num_guesses)
     guesses2 = fetchStuff(data['vectors'][@game.player2], num_guesses)
+    if (guesses1.include?(@game.target))
+      guess1 = @game.target
+    else
+      guess1 = guesses1[0]
+    end
+    if (guesses2.include?(@game.target))
+      guess2 = @game.target
+    else
+      guess2 = guesses2[0]
+    end
+
     GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'increment_timer', data:{guess1:guess1,guess2:guess2, timer: @game.timer}})
-    guesses1.each do |guess1|
-      if guess1 == @game.target
-        @game.player1_score += 1
-        GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player1})
-        break
-      end
-    guesses2.each do |guess2|
-      if guess2 == @game.target
-        @game.player2_score += 1
-        GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player2})
-        break
-      end 
+    puts 'NEW GUESSES1', guesses1.inspect
+    puts 'NEW GUESSES2', guesses2.inspect
+    if (guesses1.include?(@game.target))
+      @game.player1_score += 1
+      GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player1})
+    end
+    if (guesses2.include?(@game.target))
+      @game.player2_score += 1
+      GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player2})
     end
     @game.save
 
@@ -106,7 +116,7 @@ class GameChannel < ApplicationCable::Channel
 
   def fetchStuff(vectors, num_guesses=1)
     if vectors[0] == []
-      return ''
+      return ['']
     end
     url = 'https://inputtools.google.com/request?ime=handwriting&app=quickdraw&dbg=1&cs=1&oe=UTF-8'
     headers = {
@@ -125,6 +135,6 @@ class GameChannel < ApplicationCable::Channel
     response = RestClient.post(url, data.to_json, headers=headers)
     result = JSON.parse(response)
     
-    return result[1][0][1][0..num_guesses]
+    return result[1][0][1].take(num_guesses)
   end
 end
