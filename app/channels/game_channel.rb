@@ -31,17 +31,27 @@ class GameChannel < ApplicationCable::Channel
 
   def increment_timer(data)
     @game = Game.find(data['game_id'])
-    guess1 = fetchStuff(data['vectors'][@game.player1])
-    guess2 = fetchStuff(data['vectors'][@game.player2])
     @game.timer += 1
+    num_guesses = 1
+    if @game.timer >= 40
+      num_guesses = 5
+    end
+    guesses1 = fetchStuff(data['vectors'][@game.player1], num_guesses)
+    guesses2 = fetchStuff(data['vectors'][@game.player2], num_guesses)
     GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'increment_timer', data:{guess1:guess1,guess2:guess2, timer: @game.timer}})
-    if guess1 == @game.target
-      @game.player1_score += 1
-      GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player1})
-    elsif guess2 == @game.target
-      @game.player2_score += 1
-      GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player2})
-    end 
+    guesses1.each do |guess1|
+      if guess1 == @game.target
+        @game.player1_score += 1
+        GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player1})
+        break
+      end
+    guesses2.each do |guess2|
+      if guess2 == @game.target
+        @game.player2_score += 1
+        GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'game_over', winnerName:@game.player2})
+        break
+      end 
+    end
     @game.save
 
   end
@@ -94,7 +104,7 @@ class GameChannel < ApplicationCable::Channel
 
 
 
-  def fetchStuff(vectors)
+  def fetchStuff(vectors, num_guesses=1)
     if vectors[0] == []
       return ''
     end
@@ -115,6 +125,6 @@ class GameChannel < ApplicationCable::Channel
     response = RestClient.post(url, data.to_json, headers=headers)
     result = JSON.parse(response)
     
-    return result[1][0][1][0]
+    return result[1][0][1][0..num_guesses]
   end
 end
