@@ -13,7 +13,7 @@ class Api::V1::AuthController < ApplicationController
 
 	def get_user
 		if user_in_session
-			render json: {user: user_in_session}
+			render json: {user: user_in_session.as_json(:include => ['friends'])}
 		else
 			render json: {error: "error!"}
 		end
