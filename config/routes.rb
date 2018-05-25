@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 			post '/signup', to: "users#create"
 			get '/get_user', to: "auth#get_user"
 			resources :games
+			post '/friendships', to: "friendships#create"
 	  		# resources :user_targets
 			# resources :targets
 			# resources :friendships

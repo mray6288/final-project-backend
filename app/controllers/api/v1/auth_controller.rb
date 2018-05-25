@@ -5,7 +5,7 @@ class Api::V1::AuthController < ApplicationController
 
 		if @user && @user.authenticate(params[:password])
 			token = encode({user_id: @user.id})
-			render json: {user: @user, jwt: token}
+			render json: {user: @user.as_json(:include => ['friends']), jwt: token}
 		else
 			render json: {error: "error!"}
 		end
