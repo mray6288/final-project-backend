@@ -19,7 +19,7 @@ class GameChannel < ApplicationCable::Channel
       #   @game.newGame()
       # end
       sleep(1)
-      GameChannel.broadcast_to("game-#{@game.id}", {type: 'new subscriber', game: @game, isPlayer: params[:username] === @game.player2})
+      GameChannel.broadcast_to("game-#{@game.id}", {type: 'new_subscriber', game: @game, isPlayer: params[:username] === @game.player2})
     end
   end
 
@@ -33,10 +33,14 @@ class GameChannel < ApplicationCable::Channel
     @game = Game.find(data['game_id'])
     @game.timer += 1
     num_guesses = 1
-    if @game.timer >= 40
-      num_guesses = 5
+    if @game.timer >= 100
+      GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'time_up'})
     elsif @game.timer >= 60
       num_guesses = 20
+    elsif @game.timer >= 45
+      num_guesses = 10
+    elsif @game.timer >= 30
+      num_guesses = 5
     end
     guesses1 = fetchStuff(data['vectors'][@game.player1], num_guesses)
     guesses2 = fetchStuff(data['vectors'][@game.player2], num_guesses)
