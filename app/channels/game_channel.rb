@@ -103,7 +103,10 @@ class GameChannel < ApplicationCable::Channel
 
   def leave_channel(data)
     # byebug
-    GameChannel.broadcast_to("game-#{data['game_id']}", {type:'opponent_left', username: data['username']})
+    begin
+      GameChannel.broadcast_to("game-#{data['game_id']}", {type:'opponent_left', username: data['username']})
+    rescue Exception => ex
+      puts 'ERROR LEAVE CHANNEL', ex
     @game = Game.find(data['game_id'])
     @game.destroy
   end
