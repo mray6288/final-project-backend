@@ -110,6 +110,7 @@ class GameChannel < ApplicationCable::Channel
     ensure
       @game = Game.find(data['game_id'])
       @game.destroy
+    end
   end
 
   def unsubscribed
