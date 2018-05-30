@@ -33,9 +33,9 @@ class GameChannel < ApplicationCable::Channel
     @game = Game.find(data['game_id'])
     @game.timer += 1
     num_guesses = 1
-    if @game.timer >= 100
+    if @game.timer >= 60
       GameChannel.broadcast_to("game-#{data['game_id']}", {type: 'time_up'})
-    elsif @game.timer >= 60
+    elsif @game.timer >= 55
       num_guesses = 20
     elsif @game.timer >= 45
       num_guesses = 10
