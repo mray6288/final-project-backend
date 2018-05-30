@@ -12,6 +12,6 @@ class Api::V1::FriendshipsController < ApplicationController
 				friend_wins = score
 			end
 		end
-		Friendship.create({user_id: params[:user][:id], friend_id: @friend[:id], wins_against: user_wins, losses_against: friend_wins})
+		Friendship.create({user_id: params[:user][:id], friend_id: @friend[:id], wins_against: user_wins})
 	end
 end
